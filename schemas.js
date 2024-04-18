@@ -1,7 +1,8 @@
 const joi = require('joi');
 const ExpressError = require('./utils/ExpressError');
 const passport = require('passport');
-
+const Campground = require('./models/campground');
+const Review = require('./models/review');
 const validateCampground = (req, res, next) => {
     const campgroundSchema = joi.object({
         campground: joi.object({
@@ -44,6 +45,26 @@ const isLoggedIn = (req,res,next)=>{
     }
     next();
 }
+const isAdmin = async (req,res,next) =>{
+    const {id} = req.params;
+    const camp = await Campground.findById(id);
+    if((!req.user) || (camp.author.toString()!=(req.user._id.toString())) ){
+        req.flash("error","You do not have permission");
+        return res.redirect(`/campgrounds/${id}`);
+    }
+    next();
+}
+const ReviewAdmin = async (req,res,next)=>{
+    const {id, reviewId} = req.params;
+    const review = await Review.findById(reviewId).populate('author');
+    if((!req.user )|| review.author._id.toString()!=req.user._id.toString()){
+        req.flash('error',"You do not have permission to delete other's comments");
+        return res.redirect(`/campgrounds/${id}`);
+    }
+    next();
+}
 module.exports.validateCampground = validateCampground;
 module.exports.validateReview = validateReview;
 module.exports.isLoggedIn = isLoggedIn;
+module.exports.isAdmin = isAdmin;
+module.exports.ReviewAdmin = ReviewAdmin;

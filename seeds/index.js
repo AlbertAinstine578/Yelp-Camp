@@ -3,6 +3,7 @@ const Campground = require('../models/campground');
 const cities = require('./cities');
  const {descriptors,places} = require('./seedHelpers');
  const axios = require('axios');
+const { object } = require('joi');
 
 async function main(){
   await mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp');
@@ -29,6 +30,7 @@ const seedDB = async () =>{
         title: `${descriptors[sample(descriptors)]} ${places[sample(places)]}`,
         Image: imageUrl,
         description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tenetur id quas, quis atque delectus molestias pariatur cum ad, beatae quos numquam nostrum voluptas cupiditate, quaerat qui? Ipsa dolorem tenetur omnis.",
+        author:'661cff23181be8a85e8acd58'
         })
     await camp.save();
     }
